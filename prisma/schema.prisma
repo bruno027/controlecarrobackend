@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// yarn prisma migrate dev
+
+model User{
+  id Int @id @default(autoincrement())
+  nome String
+  email String
+  senha String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  despesa Despesa[]
+  combustivel Combustivel[]
+
+  @@map("user")
+
+
+
+}
+
+model Carro{
+  id Int @id @default(autoincrement())
+  placa String
+
+  despesa Despesa[]
+  combustivel Combustivel[]
+  @@map("carro")
+}
+
+model Categoria_despesa{
+  id Int @id @default(autoincrement())
+  nome String
+  despesa Despesa[]
+
+  @@map("categoria_despesa")
+}
+
+model Despesa{
+  id Int @id @default(autoincrement())
+  categoria_despesa Categoria_despesa @relation(fields:[categoria_despesa_id],references:[id])
+  categoria_despesa_id Int
+  valor Float
+  carro Carro @relation(fields:[carro_id],references:[id])
+  carro_id Int
+  data DateTime
+  descricao String
+  user User @relation(fields:[user_id],references:[id])
+  user_id Int
+
+  @@map("despesa")
+
+}
+
+model Combustivel{
+  id Int @id @default(autoincrement())
+  km_inicial Float
+  km_final Float
+  litros Float
+  carro Carro @relation(fields:[carro_id],references:[id])
+  carro_id Int
+  data DateTime
+
+  user User @relation(fields:[user_id],references:[id])
+  user_id Int
+  @@map("combustivel")
+}
